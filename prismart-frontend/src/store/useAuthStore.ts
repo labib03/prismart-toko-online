@@ -7,6 +7,9 @@ export interface User {
   name: string;
   role: 'USER' | 'ADMIN';
   createdAt?: string;
+  _count?: {
+    orders?: number;
+  };
 }
 
 interface AuthState {
@@ -16,6 +19,7 @@ interface AuthState {
   isAdmin: boolean;
   loading: boolean;
   setAuth: (token: string, user: User) => void;
+  updateUser: (user: User, newToken?: string) => void;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -36,6 +40,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isAuthenticated: true,
       isAdmin: user.role === 'ADMIN',
       loading: false,
+    });
+  },
+
+  updateUser: (user: User, newToken?: string) => {
+    const currentToken = newToken || get().token || localStorage.getItem('prismart_token') || '';
+    if (currentToken) {
+      localStorage.setItem('prismart_token', currentToken);
+    }
+    localStorage.setItem('prismart_user', JSON.stringify(user));
+    set({
+      token: currentToken,
+      user,
+      isAuthenticated: true,
+      isAdmin: user.role === 'ADMIN',
     });
   },
 

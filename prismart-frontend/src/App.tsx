@@ -8,6 +8,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { CartPage } from './pages/CartPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { AdminProductsPage } from './pages/AdminProductsPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { useAuthStore } from './store/useAuthStore';
 
 export default function App() {
@@ -29,6 +30,14 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
 
           {/* User Protected Routes */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/cart"
             element={
