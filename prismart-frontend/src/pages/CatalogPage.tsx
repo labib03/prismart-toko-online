@@ -1,3 +1,4 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Marquee Hero · design-system: design.md · designed-as-app */
 import React, { useState, useEffect } from 'react';
 import { Search, Sparkles, AlertCircle } from 'lucide-react';
 import { apiRequest } from '../services/api';
@@ -36,33 +37,33 @@ export const CatalogPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      {/* Hero Section */}
-      <section className="hero-gradient border border-slate-200/80 rounded-3xl p-8 sm:p-12 text-center mb-10 shadow-sm relative overflow-hidden">
-        <div className="max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-600 border border-indigo-200/50 px-3.5 py-1 rounded-full text-xs font-bold mb-4">
+      {/* Hallmark Marquee Hero Section */}
+      <section className="hero-gradient border border-slate-200/80 rounded-3xl p-8 sm:p-14 text-center mb-10 shadow-xs relative overflow-hidden">
+        <div className="max-w-3xl mx-auto relative z-10">
+          <span className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-600 border border-indigo-200/60 px-3.5 py-1 rounded-full text-xs font-bold mb-5 tracking-wide">
             <Sparkles size={14} /> E-Commerce Platform Generasi Baru
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-3">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15] mb-4 font-display">
             Temukan Produk Terbaik untuk Kebutuhan Anda
           </h1>
-          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto mb-8">
-            Katalog terlengkap dengan sistem ulasan transparan, checkout super cepat, dan manajemen stok terintegrasi real-time.
+          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto mb-8 font-normal leading-relaxed">
+            Katalog produk terlengkap dengan ulasan transparan, pengiriman fleksibel, dan sistem transaksi terintegrasi real-time.
           </p>
 
-          {/* Search Bar */}
+          {/* Search Bar Overlay */}
           <div className="max-w-xl mx-auto relative flex items-center">
-            <Search size={20} className="absolute left-4 text-slate-400" />
+            <Search size={20} className="absolute left-4.5 text-slate-400" />
             <input
               type="text"
               placeholder="Cari produk berdasarkan nama atau deskripsi..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-12 py-3.5 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-900 shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+              className="w-full pl-12 pr-12 py-3.5 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-900 shadow-xs focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute right-4 text-xs font-bold text-slate-400 hover:text-slate-600"
+                className="absolute right-4 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
               >
                 Hapus
               </button>
@@ -74,7 +75,9 @@ export const CatalogPage: React.FC = () => {
       {/* Catalog Grid Section */}
       <main>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Semua Produk</h2>
+          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight font-display">
+            Katalog Produk Utama
+          </h2>
           <span className="text-xs font-semibold text-slate-500">
             {loading ? 'Memuat...' : `${products.length} Produk Ditemukan`}
           </span>
@@ -99,9 +102,9 @@ export const CatalogPage: React.FC = () => {
             ))}
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-16 px-4 bg-white border border-slate-200 rounded-3xl">
+          <div className="text-center py-16 px-4 bg-white border border-slate-200/80 rounded-3xl">
             <div className="text-4xl mb-3">📦</div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Tidak Ada Produk Ditemukan</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-1 font-display">Tidak Ada Produk Ditemukan</h3>
             <p className="text-sm text-slate-500">Coba kata kunci pencarian lain atau kembali beberapa saat lagi.</p>
           </div>
         ) : (

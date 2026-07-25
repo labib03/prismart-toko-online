@@ -1,3 +1,4 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Marquee Hero · design-system: design.md · designed-as-app */
 import React, { useState } from 'react';
 import { ShoppingCart, Check, Star } from 'lucide-react';
 import { Product, useCartStore } from '../store/useCartStore';
@@ -36,7 +37,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetail 
   return (
     <div
       onClick={() => onOpenDetail && onOpenDetail(product)}
-      className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden flex flex-col shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 group cursor-pointer"
+      className="hallmark-card rounded-2xl overflow-hidden flex flex-col group cursor-pointer"
     >
       {/* Image & Stock Badge */}
       <div className="relative w-full aspect-4/3 bg-slate-100 overflow-hidden">
@@ -51,15 +52,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetail 
         />
         <div className="absolute top-3 right-3">
           {isOutOfStock ? (
-            <span className="bg-rose-50 text-rose-600 border border-rose-200 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+            <span className="bg-rose-50 text-rose-600 border border-rose-200/80 text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-2xs">
               Stok Habis
             </span>
           ) : isLowStock ? (
-            <span className="bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+            <span className="bg-amber-50 text-amber-700 border border-amber-200/80 text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-2xs">
               Sisa {product.stock}
             </span>
           ) : (
-            <span className="bg-white/90 backdrop-blur-xs text-slate-800 border border-slate-200 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+            <span className="bg-white/90 backdrop-blur-xs text-slate-800 border border-slate-200/80 text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-2xs">
               Stok: {product.stock}
             </span>
           )}
@@ -68,12 +69,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetail 
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-grow">
-        <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1 mb-1">
+        <h3 className="text-base font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1 mb-1.5 font-display">
           {product.name}
         </h3>
 
         {/* Rating Row */}
-        <div className="flex items-center gap-1.5 mb-2">
+        <div className="flex items-center gap-1.5 mb-2.5">
           <div className="flex items-center text-amber-400">
             <Star size={14} fill={avgRating > 0 ? 'currentColor' : 'none'} />
           </div>
@@ -81,7 +82,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetail 
             {avgRating > 0 ? avgRating : 'Baru'}
           </span>
           {reviewCount > 0 && (
-            <span className="text-[11px] text-slate-400">({reviewCount})</span>
+            <span className="text-[11px] text-slate-400 font-medium">({reviewCount})</span>
           )}
         </div>
 
@@ -91,14 +92,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetail 
 
         {/* Footer */}
         <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">
-          <div className="text-base font-extrabold text-indigo-600">
+          <div className="text-base font-extrabold text-indigo-600 font-display">
             {formatRupiah(product.price)}
           </div>
 
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 active:scale-[0.98] ${
               added
                 ? 'bg-emerald-600 text-white'
                 : isOutOfStock
