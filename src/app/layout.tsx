@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
+import { AnalyticsProvider } from '@/components/AnalyticsProvider';
+
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-E4TRBE0D34';
 
 export const metadata: Metadata = {
   title: 'Prismart - Modern E-Commerce Platform',
@@ -19,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans antialiased">
+        <AnalyticsProvider />
         <Navbar />
         <main className="flex-grow">{children}</main>
         <footer className="bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-500 mt-12">
@@ -29,6 +34,7 @@ export default function RootLayout({
           </div>
         </footer>
       </body>
+      <GoogleAnalytics gaId={gaId} />
     </html>
   );
 }

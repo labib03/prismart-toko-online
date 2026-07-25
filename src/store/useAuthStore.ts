@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { apiRequest } from '@/services/api';
+import { identifyUser, trackEcommerceEvent } from '@/lib/analytics';
 
 export interface User {
   id: string;
@@ -48,6 +49,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isAdmin: user.role === 'ADMIN',
       loading: false,
     });
+
+    identifyUser(user);
+    trackEcommerceEvent('login', { method: 'JWT' });
   },
 
   updateUser: (user: User, newToken?: string) => {
@@ -62,6 +66,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isAuthenticated: true,
       isAdmin: user.role === 'ADMIN',
     });
+
+    identifyUser(user);
   },
 
   logout: () => {
@@ -76,6 +82,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isAdmin: false,
       loading: false,
     });
+
+    trackEcommerceEvent('logout');
   },
 
   checkAuth: async () => {

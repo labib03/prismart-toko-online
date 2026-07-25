@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { trackEcommerceEvent } from '@/lib/analytics';
 
 export interface Product {
   id: string;
@@ -61,12 +62,41 @@ export const useCartStore = create<CartState>((set, get) => ({
 
     saveCart(updated);
     set({ items: updated });
+
+    trackEcommerceEvent('add_to_cart', {
+      currency: 'IDR',
+      value: Number(product.price) * quantity,
+      items: [
+        {
+          item_id: product.id,
+          item_name: product.name,
+          price: Number(product.price),
+          quantity,
+        },
+      ],
+    });
   },
 
   removeItem: (productId: string) => {
+    const itemToRemove = get().items.find((item) => item.product.id === productId);
     const updated = get().items.filter((item) => item.product.id !== productId);
     saveCart(updated);
     set({ items: updated });
+
+    if (itemToRemove) {
+      trackEcommerceEvent('remove_from_cart', {
+        currency: 'IDR',
+        value: Number(itemToRemove.product.price) * itemToRemove.quantity,
+        items: [
+          {
+            item_id: itemToRemove.product.id,
+            item_name: itemToRemove.product.name,
+            price: Number(itemToRemove.product.price),
+            quantity: itemToRemove.quantity,
+          },
+        ],
+      });
+    }
   },
 
   updateQuantity: (productId: string, quantity: number) => {
@@ -91,6 +121,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       localStorage.removeItem('prismart_cart');
     }
     set({ items: [] });
+    trackEcommerceEvent('clear_cart');
   },
 
   getTotalAmount: () => {
