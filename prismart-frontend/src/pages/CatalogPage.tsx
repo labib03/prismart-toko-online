@@ -3,19 +3,21 @@ import { Search, Sparkles, AlertCircle } from 'lucide-react';
 import { apiRequest } from '../services/api';
 import { Product } from '../store/useCartStore';
 import { ProductCard } from '../components/ProductCard';
+import { ProductDetailModal } from '../components/ProductDetailModal';
 
 export const CatalogPage: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<(Product & { avgRating?: number; reviewCount?: number })[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<(Product & { avgRating?: number; reviewCount?: number }) | null>(null);
 
   const fetchProducts = async (query = '') => {
     setLoading(true);
     setError(null);
     try {
       const endpoint = query ? `/products?search=${encodeURIComponent(query)}` : '/products';
-      const res = await apiRequest<Product[]>(endpoint);
+      const res = await apiRequest<(Product & { avgRating?: number; reviewCount?: number })[]>(endpoint);
       if (res.success && Array.isArray(res.data)) {
         setProducts(res.data);
       } else {
@@ -44,7 +46,7 @@ export const CatalogPage: React.FC = () => {
             Temukan Produk Terbaik untuk Kebutuhan Anda
           </h1>
           <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto mb-8">
-            Katalog terlengkap dengan sistem checkout super cepat dan manajemen stok terintegrasi secara real-time.
+            Katalog terlengkap dengan sistem ulasan transparan, checkout super cepat, dan manajemen stok terintegrasi real-time.
           </p>
 
           {/* Search Bar */}
@@ -105,11 +107,24 @@ export const CatalogPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onOpenDetail={(prod) => setSelectedProduct(prod)}
+              />
             ))}
           </div>
         )}
       </main>
+
+      {/* Product Detail & Review Modal */}
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onReviewAdded={() => fetchProducts(search)}
+        />
+      )}
     </div>
   );
 };

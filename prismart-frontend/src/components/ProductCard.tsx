@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Check } from 'lucide-react';
+import { ShoppingCart, Check, Star } from 'lucide-react';
 import { Product, useCartStore } from '../store/useCartStore';
 
 interface ProductCardProps {
-  product: Product;
+  product: Product & { avgRating?: number; reviewCount?: number };
+  onOpenDetail?: (product: Product & { avgRating?: number; reviewCount?: number }) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenDetail }) => {
   const addItem = useCartStore((state) => state.addItem);
   const [added, setAdded] = useState(false);
 
@@ -19,7 +20,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }).format(num);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (product.stock <= 0) return;
     addItem(product, 1);
     setAdded(true);
@@ -28,9 +30,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const isOutOfStock = product.stock <= 0;
   const isLowStock = product.stock > 0 && product.stock <= 3;
+  const avgRating = product.avgRating || 0;
+  const reviewCount = product.reviewCount || 0;
 
   return (
-    <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden flex flex-col shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 group">
+    <div
+      onClick={() => onOpenDetail && onOpenDetail(product)}
+      className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden flex flex-col shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 group cursor-pointer"
+    >
       {/* Image & Stock Badge */}
       <div className="relative w-full aspect-4/3 bg-slate-100 overflow-hidden">
         <img
@@ -64,6 +71,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1 mb-1">
           {product.name}
         </h3>
+
+        {/* Rating Row */}
+        <div className="flex items-center gap-1.5 mb-2">
+          <div className="flex items-center text-amber-400">
+            <Star size={14} fill={avgRating > 0 ? 'currentColor' : 'none'} />
+          </div>
+          <span className="text-xs font-bold text-slate-800">
+            {avgRating > 0 ? avgRating : 'Baru'}
+          </span>
+          {reviewCount > 0 && (
+            <span className="text-[11px] text-slate-400">({reviewCount})</span>
+          )}
+        </div>
+
         <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
           {product.description || 'Tidak ada deskripsi produk.'}
         </p>
