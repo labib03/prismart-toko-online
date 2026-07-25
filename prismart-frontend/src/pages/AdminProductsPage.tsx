@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Plus, Trash2, AlertCircle, CheckCircle2, Package } from 'lucide-react';
+import { Shield, Plus, Pencil, Trash2, AlertCircle, CheckCircle2, Package, X } from 'lucide-react';
 import { apiRequest } from '../services/api';
 import { Product } from '../store/useCartStore';
 
@@ -11,6 +11,7 @@ export const AdminProductsPage: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   // Form State
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -35,7 +36,29 @@ export const AdminProductsPage: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const handleCreateProduct = async (e: React.FormEvent) => {
+  const resetForm = () => {
+    setEditingId(null);
+    setName('');
+    setDescription('');
+    setPrice('');
+    setStock('');
+    setImageUrl('');
+  };
+
+  const startEdit = (product: Product) => {
+    setEditingId(product.id);
+    setName(product.name);
+    setDescription(product.description || '');
+    setPrice(String(product.price));
+    setStock(String(product.stock));
+    setImageUrl(product.imageUrl || '');
+    setError(null);
+    setSuccess(null);
+    // Scroll form into view if on mobile
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !price || !stock) {
       setError('Nama, harga, dan stok wajib diisi.');
@@ -46,28 +69,40 @@ export const AdminProductsPage: React.FC = () => {
     setError(null);
     setSuccess(null);
 
+    const payload = {
+      name,
+      description,
+      price: Number(price),
+      stock: Number(stock),
+      imageUrl: imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
+    };
+
     try {
-      const res = await apiRequest<Product>('/products', {
-        method: 'POST',
-        body: JSON.stringify({
-          name,
-          description,
-          price: Number(price),
-          stock: Number(stock),
-          imageUrl: imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
-        }),
-      });
+      let res;
+      if (editingId) {
+        // Update product via PUT
+        res = await apiRequest<Product>(`/products/${editingId}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+      } else {
+        // Create new product via POST
+        res = await apiRequest<Product>('/products', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+      }
 
       if (res.success && res.data) {
-        setSuccess(`Produk "${res.data.name}" berhasil ditambahkan!`);
-        setName('');
-        setDescription('');
-        setPrice('');
-        setStock('');
-        setImageUrl('');
+        setSuccess(
+          editingId
+            ? `Produk "${res.data.name}" berhasil diperbarui!`
+            : `Produk "${res.data.name}" berhasil ditambahkan!`
+        );
+        resetForm();
         fetchProducts();
       } else {
-        setError(res.message || 'Gagal menambahkan produk');
+        setError(res.message || (editingId ? 'Gagal mengedit produk' : 'Gagal menambahkan produk'));
       }
     } catch (err: any) {
       setError(err.message || 'Gagal terhubung ke server.');
@@ -86,6 +121,7 @@ export const AdminProductsPage: React.FC = () => {
 
       if (res.success) {
         setSuccess(`Produk "${prodName}" berhasil dihapus.`);
+        if (editingId === id) resetForm();
         fetchProducts();
       } else {
         setError(res.message || 'Gagal menghapus produk');
@@ -113,7 +149,7 @@ export const AdminProductsPage: React.FC = () => {
           Manajemen Produk Toko
         </h1>
         <p className="text-xs sm:text-sm text-slate-500">
-          Tambah, pantau stok, dan kelola produk catalog langsung dari sistem backend.
+          Tambah, edit, pantau stok, dan hapus produk katalog langsung dari sistem backend.
         </p>
       </div>
 
@@ -132,14 +168,35 @@ export const AdminProductsPage: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Form Tambah Produk */}
+        {/* Form Tambah / Edit Produk */}
         <div className="lg:col-span-5 bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm self-start">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-6">
-            <Plus size={18} className="text-indigo-600" />
-            <span>Tambah Produk Baru</span>
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              {editingId ? (
+                <>
+                  <Pencil size={18} className="text-amber-600" />
+                  <span>Edit Produk</span>
+                </>
+              ) : (
+                <>
+                  <Plus size={18} className="text-indigo-600" />
+                  <span>Tambah Produk Baru</span>
+                </>
+              )}
+            </h2>
 
-          <form onSubmit={handleCreateProduct} className="space-y-4">
+            {editingId && (
+              <button
+                onClick={resetForm}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition-colors"
+              >
+                <X size={14} />
+                <span>Batal Edit</span>
+              </button>
+            )}
+          </div>
+
+          <form onSubmit={handleSubmitForm} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-800 mb-1.5">Nama Produk *</label>
               <input
@@ -205,9 +262,19 @@ export const AdminProductsPage: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-md shadow-indigo-600/25 transition-all mt-2 disabled:opacity-60"
+              className={`w-full py-3 text-white rounded-xl text-sm font-bold shadow-md transition-all mt-2 disabled:opacity-60 ${
+                editingId
+                  ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-600/25'
+                  : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/25'
+              }`}
             >
-              {submitting ? <span>Menyimpan Produk...</span> : <span>+ Simpan Produk Baru</span>}
+              {submitting ? (
+                <span>Menyimpan Produk...</span>
+              ) : editingId ? (
+                <span>Update Produk</span>
+              ) : (
+                <span>+ Simpan Produk Baru</span>
+              )}
             </button>
           </form>
         </div>
@@ -242,7 +309,12 @@ export const AdminProductsPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {products.map((prod) => (
-                    <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr
+                      key={prod.id}
+                      className={`transition-colors ${
+                        editingId === prod.id ? 'bg-amber-50/50' : 'hover:bg-slate-50/50'
+                      }`}
+                    >
                       <td className="p-3">
                         <div className="flex items-center gap-3">
                           <img
@@ -273,13 +345,22 @@ export const AdminProductsPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="p-3 text-right">
-                        <button
-                          onClick={() => handleDeleteProduct(prod.id, prod.name)}
-                          className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                          title="Hapus Produk"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <div className="inline-flex items-center gap-1">
+                          <button
+                            onClick={() => startEdit(prod)}
+                            className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            title="Edit Produk"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(prod.id, prod.name)}
+                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Hapus Produk"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
