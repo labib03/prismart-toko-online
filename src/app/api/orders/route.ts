@@ -10,10 +10,8 @@ export async function GET(req: NextRequest) {
       return sendError('Akses ditolak. Harap login terlebih dahulu.', 401);
     }
 
-    const isUserAdmin = authUser.role === 'ADMIN';
-
     const orders = await prisma.order.findMany({
-      where: isUserAdmin ? undefined : { userId: authUser.id },
+      where: { userId: authUser.id },
       include: {
         user: { select: { id: true, name: true, email: true } },
         orderItems: {
