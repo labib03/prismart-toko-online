@@ -9,7 +9,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+const frontendUrl = process.env.FRONTEND_URL;
+
+app.use(
+  cors({
+    origin: frontendUrl ? [frontendUrl, 'http://localhost:3000', 'http://localhost:5173'] : '*',
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Health Check Endpoint
