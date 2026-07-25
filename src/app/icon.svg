@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="prismart-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="50%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Container -->
+  <rect width="512" height="512" rx="128" fill="url(#prismart-grad)"/>
+  
+  <!-- Subtle Inner Border -->
+  <rect x="12" y="12" width="488" height="488" rx="116" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="10"/>
+  
+  <!-- Shopping Bag Icon -->
+  <g transform="translate(116, 116)">
+    <!-- Bag Handle -->
+    <path d="M 80 110 C 80 45, 200 45, 200 110" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round"/>
+    <!-- Bag Body -->
+    <path d="M 40 110 L 240 110 L 255 245 C 258 260, 248 275, 232 275 L 48 275 C 32 275, 22 260, 25 245 Z" fill="#ffffff"/>
+    <!-- Sparkle Emblem inside bag -->
+    <path d="M 140 160 L 145 182 L 167 187 L 145 192 L 140 214 L 135 192 L 113 187 L 135 182 Z" fill="#4f46e5"/>
+  </g>
+</svg>

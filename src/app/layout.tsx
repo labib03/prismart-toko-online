@@ -5,6 +5,10 @@ import { Navbar } from '@/components/Navbar';
 export const metadata: Metadata = {
   title: 'Prismart - Modern E-Commerce Platform',
   description: 'Toko online belanja produk elektronik & aksesoris terbaik dengan harga terjangkau.',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
